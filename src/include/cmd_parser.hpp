@@ -4,7 +4,7 @@
 class CMD {
 public:
     CMD(const std::string& line) {
-        const auto tokens = Utils::split(line, ' ');
+        const std::vector<char*> tokens = Utils::split(line, ' ');
         if (tokens.empty()) {
             throw std::invalid_argument("Token list is empty");
         }

@@ -1,10 +1,12 @@
+#include <unistd.h>
 #include <iostream>
 #include <vector>
+#include <sys/wait.h>
 
-#include "include/cmd_parser.hpp"
+#include <lib/common/utils.hpp>
 
-//static const std::string prompt = "shelly> ";
-//static std::vector<std::string> paths = {"/bin/"};
+static const std::string prompt = "shelly> ";
+static std::vector<std::string> paths = {"/bin/"};
 
 //void handle_batch_mode();
 //void handle_interactive_mode();
@@ -12,16 +14,51 @@
 void handle_interactive_mode() {
     std::string line;
     while(true) {
+        std::cout << prompt;
         std::getline(std::cin, line);
-        CMD cmd(line);
-        std::cout << cmd.to_string();
+        std::vector<char*> args = Utils::split_to_c_strings(line, ' ');
+        if (args.empty()) {
+            continue;
+        }
+
+        int rc = fork();
+        if (rc < 0) {
+            std::cerr << "Error creating child process\n";
+        } else if (rc == 0) {
+            execvp(args[0], args.data());
+            exit(1);
+        } else {
+            /*int rc = */wait(NULL); //TODO: Check return code ?
+            for (const auto p : args) {
+                delete p;
+            }
+        }
     }
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** /*argv*/) {
     if (argc > 1) {
 //       handle_batch_mode(argc, argv);
     } else {
         handle_interactive_mode();
     }
 }
+
+//int main() {
+//    std::vector<std::string> tokens;
+//    tokens = Utils::split("This is a   line ", ' ');
+//    std::cout << "\nTokens size: " << tokens.size();
+//    for (const auto& token : tokens) {
+//        std::cout << "\n" << token;
+//    }
+//    tokens = Utils::split("This is a,,,line ", ',');
+//    std::cout << "\nTokens size: " << tokens.size();
+//    for (const auto& token : tokens) {
+//        std::cout << "\n" << token;
+//    }
+//    tokens = Utils::split("         ", ' ');
+//    std::cout << "\nTokens size: " << tokens.size();
+//    for (const auto& token : tokens) {
+//        std::cout << "\n" << token;
+//    }
+//}
