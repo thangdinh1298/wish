@@ -3,7 +3,7 @@
 #include <vector>
 #include <sys/wait.h>
 
-#include <lib/common/utils.hpp>
+#include <lib/common/strings.hpp>
 
 static const std::string prompt = "shelly> ";
 static std::vector<std::string> paths = {"/bin/"};
@@ -43,22 +43,3 @@ int main(int argc, char** /*argv*/) {
         handle_interactive_mode();
     }
 }
-
-//int main() {
-//    std::vector<std::string> tokens;
-//    tokens = Utils::split("This is a   line ", ' ');
-//    std::cout << "\nTokens size: " << tokens.size();
-//    for (const auto& token : tokens) {
-//        std::cout << "\n" << token;
-//    }
-//    tokens = Utils::split("This is a,,,line ", ',');
-//    std::cout << "\nTokens size: " << tokens.size();
-//    for (const auto& token : tokens) {
-//        std::cout << "\n" << token;
-//    }
-//    tokens = Utils::split("         ", ' ');
-//    std::cout << "\nTokens size: " << tokens.size();
-//    for (const auto& token : tokens) {
-//        std::cout << "\n" << token;
-//    }
-//}
