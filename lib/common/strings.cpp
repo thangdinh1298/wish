@@ -35,7 +35,7 @@ std::vector<char*> Utils::split_to_c_strings(const std::string& input, const cha
     struct TokenAggregator {
         std::vector<char*> tokens_;
         void operator()(const std::string& input, int token_begin, int token_end) {
-            char* token = (char*) malloc((token_end - token_begin + 2 ) * sizeof(char));
+            char* token = new char[(token_end - token_begin + 2 )];
             int j = 0;
             for (int i = token_begin; i <= token_end; i++, j++) {
                 token[j] = input[i];
