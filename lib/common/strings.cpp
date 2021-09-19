@@ -61,3 +61,13 @@ std::vector<std::string> Utils::split(std::string s, const std::string& delim) {
     tokens.push_back(s);
     return tokens;
 }
+
+std::string Utils::trim(const std::string& str) {
+    std::string whitespaces = " \t\f\v\n\r";
+    size_t start = str.find_first_not_of(whitespaces);
+    size_t end = str.find_last_not_of(whitespaces);
+    if (start == std::string::npos || end == std::string::npos) {
+        return "";
+    }
+    return str.substr(start, end - start + 1);
+}

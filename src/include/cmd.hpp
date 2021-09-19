@@ -40,10 +40,10 @@ public:
             auto tokens = Utils::split(cmd_string, '>');
             switch(tokens.size()) {
                 case 1:
-                    cmds.emplace_back(tokens[0]);
+                    cmds.emplace_back(Utils::trim(tokens[0]));
                     break;
                 default:
-                    cmds.emplace_back(tokens[0], true, tokens[1]);
+                    cmds.emplace_back(Utils::trim(tokens[0]), true, Utils::trim(tokens[1]));
                     break;
             }
         }
@@ -67,12 +67,12 @@ private:
                     exit(1);
                 }
             }
-
             std::vector<char*> argv;
             for (const auto& p : args_) {
                 argv.push_back(const_cast<char*>(p.c_str()));
-                printf("%s\n",argv.back());
             }
+            argv.push_back((char*) 0);
+
             execvp(argv[0], argv.data());
             print_error();
             exit(1);
