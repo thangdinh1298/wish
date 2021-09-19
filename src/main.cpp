@@ -5,8 +5,6 @@
 #include <vector>
 #include <sys/wait.h>
 
-#include <lib/common/strings.hpp>
-
 static const std::string prompt = "wish> ";
 static const std::string error_msg = "An error has occurred\n";
 
@@ -18,47 +16,12 @@ void print_usage() {
     std::cerr << "Usage: ./wish [batch_file]\n";
 }
 
-void handle_non_built_in(const std::vector<char*>& args) {
-    int rc = fork();
-    if (rc < 0) {
-        print_error();
-    } else if (rc == 0) {
-        execvp(args[0], args.data());
-        print_error();
-        exit(1);
-    } else {
-        int rc = wait(NULL);
-        if (rc < 0) {
-            print_error();
-        }
-    }
-}
+#include "cmd.hpp"
 
 void handle_line(const std::string& line) {
-    std::vector<char*> args = Utils::split_to_c_strings(line, ' ');
-    if (args.empty()) {
-        return;
-    }
-
-    if (strcmp(args[0], "exit") == 0) {
-        exit(0);
-    } else if (strcmp(args[0], "cd") == 0) {
-        if (args.size() != 2) {
-            print_error();
-            goto free_resource;
-        }
-        int rc = chdir(args[1]);
-        if (rc != 0) {
-            print_error();
-            goto free_resource;
-        }
-    }
-    else {
-        handle_non_built_in(args);
-    }
-free_resource:
-    for (const auto p : args) {
-        delete p;
+    auto cmds = CMD::parse_cmds(line);
+    for (const auto& cmd : cmds) {
+        cmd.execute();
     }
 }
 

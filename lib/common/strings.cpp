@@ -48,3 +48,16 @@ std::vector<char*> Utils::split_to_c_strings(const std::string& input, const cha
     iterate_token(input, delim, aggr);
     return aggr.tokens_;
 } 
+
+std::vector<std::string> Utils::split(std::string s, const std::string& delim) {
+    size_t pos = 0;
+    std::string token;
+    std::vector<std::string> tokens;
+    while ((pos = s.find(delim)) != std::string::npos) {
+        token = s.substr(0, pos);
+        tokens.push_back(token);
+        s.erase(0, pos + delim.length());
+    }
+    tokens.push_back(s);
+    return tokens;
+}
