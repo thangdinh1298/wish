@@ -1,3 +1,4 @@
+#include <fstream>
 #include <string.h>
 #include <unistd.h>
 #include <iostream>
@@ -13,7 +14,11 @@ void print_error() {
     std::cerr << error_msg;
 }
 
-void handle_non_built_in(std::vector<char*> args) {
+void print_usage() {
+    std::cerr << "Usage: ./wish [batch_file]\n";
+}
+
+void handle_non_built_in(const std::vector<char*>& args) {
     int rc = fork();
     if (rc < 0) {
         print_error();
@@ -22,7 +27,7 @@ void handle_non_built_in(std::vector<char*> args) {
         print_error();
         exit(1);
     } else {
-        int rc = wait(NULL); //TODO: Check return code ?
+        int rc = wait(NULL);
         if (rc < 0) {
             print_error();
         }
@@ -60,15 +65,28 @@ free_resource:
 void handle_interactive_mode() {
     std::string line;
     std::cout << prompt;
-    while(std::getline(std::cin, line)) {
+    while (std::getline(std::cin, line)) {
         handle_line(line);
         std::cout << prompt;
     }
 }
 
-int main(int argc, char** /*argv*/) {
+void handle_batch_mode(int argc, char** argv) {
+    if (argc != 2) {
+        print_usage();
+        return;
+    }
+
+    std::fstream f(argv[1], std::ios_base::in);
+    std::string line;
+    while (std::getline(f, line)) {
+        handle_line(line);
+    }
+}
+
+int main(int argc, char** argv) {
     if (argc > 1) {
-//       handle_batch_mode(argc, argv);
+        handle_batch_mode(argc, argv);
     } else {
         handle_interactive_mode();
     }
