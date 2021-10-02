@@ -18,6 +18,10 @@ void iterate_token(const std::string& input, const char delim, Operator&& op) {
     }
 }
 
+/*
+ * Split string list of strings using a char delimeter
+ * Skips empty tokens
+ */
 std::vector<std::string> Utils::split(const std::string& input, const char delim) {
     struct TokenAggregator {
         std::vector<std::string> tokens_;
@@ -31,6 +35,10 @@ std::vector<std::string> Utils::split(const std::string& input, const char delim
     return aggr.tokens_;
 }
 
+/*
+ * Split string list of c-strings using a char delimeter
+ * Skips empty tokens
+ */
 std::vector<char*> Utils::split_to_c_strings(const std::string& input, const char delim) {
     struct TokenAggregator {
         std::vector<char*> tokens_;
@@ -49,19 +57,28 @@ std::vector<char*> Utils::split_to_c_strings(const std::string& input, const cha
     return aggr.tokens_;
 } 
 
+/*
+ * Split strings by string delimeter.
+ * Skips empty tokens
+ */
 std::vector<std::string> Utils::split(std::string s, const std::string& delim) {
     size_t pos = 0;
     std::string token;
     std::vector<std::string> tokens;
     while ((pos = s.find(delim)) != std::string::npos) {
         token = s.substr(0, pos);
-        tokens.push_back(token);
+        if (!token.empty()) {
+            tokens.push_back(token);
+        }
         s.erase(0, pos + delim.length());
     }
     tokens.push_back(s);
     return tokens;
 }
 
+/*
+ *  Trim whitespaces characters from string
+ */
 std::string Utils::trim(const std::string& str) {
     std::string whitespaces = " \t\f\v\n\r";
     size_t start = str.find_first_not_of(whitespaces);

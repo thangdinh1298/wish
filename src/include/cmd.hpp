@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <vector>
 #include <fcntl.h>
 
@@ -10,10 +11,15 @@ public:
         std::string output="") :
         need_redirect_(need_redirect), output_(output)
     {
-        args_ = Utils::split(line, ' ');
+        args_ = Utils::split(line, ' '); // args_ might be empty since split skips empty tokens
+        std::for_each(args_.begin(), args_.end(), Utils::trim);
     }
 
     void execute() const {
+        if (args_.empty()) {
+            return;
+        }
+
         if (args_[0] =="exit") {
             exit(0);
         } else if (args_[0] == "cd") {
@@ -34,16 +40,15 @@ public:
         auto cmd_strings = Utils::split(line, "&&");
         std::vector<CMD> cmds;
         for (const auto& cmd_string : cmd_strings) {
-            if (cmd_string.empty()) {
-                continue;
-            }
             auto tokens = Utils::split(cmd_string, '>');
             switch(tokens.size()) {
+                case 0:
+                    break;
                 case 1:
-                    cmds.emplace_back(Utils::trim(tokens[0]));
+                    cmds.emplace_back(tokens[0]);
                     break;
                 default:
-                    cmds.emplace_back(Utils::trim(tokens[0]), true, Utils::trim(tokens[1]));
+                    cmds.emplace_back(tokens[0], true, Utils::trim(tokens[1]));
                     break;
             }
         }
@@ -71,7 +76,7 @@ private:
             for (const auto& p : args_) {
                 argv.push_back(const_cast<char*>(p.c_str()));
             }
-            argv.push_back((char*) 0);
+            argv.push_back(nullptr);
 
             execvp(argv[0], argv.data());
             print_error();
